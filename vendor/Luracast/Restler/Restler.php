@@ -290,7 +290,7 @@ class Restler extends EventEmitter
     }
 
     /**
-     * Add api classes through this method.
+     * Add api classes through this method.i
      *
      * All the public methods that do not start with _ (underscore)
      * will be will be exposed as the public api by default.
@@ -430,6 +430,7 @@ class Restler extends EventEmitter
      */
     public function init()
     {
+        $this->requestMethod = Util::getRequestMethod();
         if (Defaults::$crossOriginResourceSharing
             && $this->requestMethod == 'OPTIONS'
         ) {
@@ -440,13 +441,17 @@ class Restler extends EventEmitter
             if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']))
                 header('Access-Control-Allow-Headers: '
                     . $_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']);
+            
+            header('Access-Control-Allow-Origin: ' .
+            	(Defaults::$accessControlAllowOrigin == '*' ? $_SERVER['HTTP_ORIGIN'] : Defaults::$accessControlAllowOrigin));
+            header('Access-Control-Allow-Credentials: true');        
+                    
             exit(0);
         }
         if (empty($this->formatMap)) {
             $this->setSupportedFormats('JsonFormat');
         }
         $this->url = $this->getPath();
-        $this->requestMethod = Util::getRequestMethod();
         $this->responseFormat = $this->getResponseFormat();
         $this->requestFormat = $this->getRequestFormat();
         $this->responseFormat->restler = $this;
